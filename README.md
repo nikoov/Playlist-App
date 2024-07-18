@@ -6,12 +6,11 @@ This application aims to provide users with a comprehensive tool to manage and t
 
 **Who will use it?**
 
+Any individual who loves listening to music!
 
 **Why is this project of interest to you?**
 
-As a young individual who prioritizes financial responsibility, I find personal finance management crucial. The idea of creating a finance tracker resonates with me personally, as I've always felt the need to track and categorize my expenses. This application is not only a technical endeavor for me but also a practical solution to a real-world challenge I face. By developing a finance tracker, I aim to empower individuals like myself to manage their expenses effectively and make informed financial decisions.ocess aligns with my interest in both software development and personal finance. This project provides an opportunity to apply technical skills to solve a real-world problem, and the prospect of empowering users to achieve their financial goals is particularly motivating. Moreover, the complexity of financial data and the need for a clear, intuitive interface present interesting challenges that I look forward to addressing in the development process.
-
-
+As a young individual who loves music and spends a lot of time listening to music, I would love to create an app that personalizes my music the way that I want!
 
 ## User Stories
 
@@ -21,4 +20,4 @@ As a young individual who prioritizes financial responsibility, I find personal 
 
 3. **As a user, I want to be able to categorize my songs**
 
-4. **As a user, I want to be able to set a monthly budget for specific expense categories**
+4. **As a user, I want to be able to search for songs or artists in my playlist**
