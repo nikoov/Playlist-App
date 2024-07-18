@@ -1,5 +1,6 @@
 package ui;
 
+
 import model.Category;
 import model.Playlist;
 import model.Song;
@@ -14,13 +15,14 @@ public class PlaylistApp {
     private Map<String, Category> categories;
     private Scanner scanner;
 
+    //constructs a playlist app
     public PlaylistApp() {
         playlists = new HashMap<>();
         categories = new HashMap<>();
         scanner = new Scanner(System.in);
         runPlaylistApp();
     }
-
+    //runs the playlist app menu
     private void runPlaylistApp() {
         boolean keepGoing = true;
 
@@ -174,6 +176,7 @@ public class PlaylistApp {
         System.out.println("Category created.");
     }
 
+    //allows user to input a song to a specific category
     private void addSongToCategory() {
         System.out.print("Enter category name: ");
         String categoryName = scanner.nextLine();
@@ -193,6 +196,7 @@ public class PlaylistApp {
         }
     }
 
+    //allows the user to view a certain category
     private void viewCategory() {
         System.out.print("Enter category name: ");
         String name = scanner.nextLine();
@@ -206,6 +210,9 @@ public class PlaylistApp {
         }
     }
 
+    //allows the user to shuffle the playlist
+    //Requires the playlist to not be null
+
     private void shufflePlaylist() {
         System.out.print("Enter playlist name to shuffle: ");
         String name = scanner.nextLine();
@@ -218,6 +225,8 @@ public class PlaylistApp {
         }
     }
 
+    //Requires: Playlist to not be null
+    // EFFECTS: searches for songs in the playlist by their name or their artist
     private void searchSongInPlaylist() {
         System.out.print("Enter playlist name to search in: ");
         String playlistName = scanner.nextLine();

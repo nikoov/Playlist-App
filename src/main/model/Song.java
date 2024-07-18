@@ -1,3 +1,6 @@
+package model;
+
+
 /**
  * Represents a song with a title, artist, and category.
  */
