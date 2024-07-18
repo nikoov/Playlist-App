@@ -1,6 +1,6 @@
 # Playlist App
 
-## Tracking Your Financial Journey
+## Personalizing your music
 
 This application aims to provide users with a comprehensive tool to manage and track their personal music.
 
