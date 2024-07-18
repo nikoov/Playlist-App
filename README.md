@@ -1,12 +1,11 @@
-# Finance Tracker
+# Playlist App
 
 ## Tracking Your Financial Journey
 
-This application aims to provide users with a comprehensive tool to manage and track their personal finances. Users will be able to input income, expenses, and set budget goals. The application will offer visualizations and insights into spending patterns, helping users make informed financial decisions.
+This application aims to provide users with a comprehensive tool to manage and track their personal music.
 
 **Who will use it?**
 
-This application targets individuals who want to take control of their financial health. Whether you are a student learning to budget, a young professional managing your expenses, or someone planning for a big life event, Finance Tracker caters to a diverse audience seeking a user-friendly and feature-rich financial management solution.
 
 **Why is this project of interest to you?**
 
@@ -16,10 +15,10 @@ As a young individual who prioritizes financial responsibility, I find personal 
 
 ## User Stories
 
-1. **As a user, I want to be able to add a new income source to my financial tracker**
+1. **As a user, I want to be able to add a new songs to my playlist**
 
-2. **As a user, I want to be able to view a list of all my recorded expenses as a financial summary**
+2. **As a user, I want to be able to view a list of songs on my playlist**
 
-3. **As a user, I want to be able to record and categorize my expenses**
+3. **As a user, I want to be able to categorize my songs**
 
 4. **As a user, I want to be able to set a monthly budget for specific expense categories**
