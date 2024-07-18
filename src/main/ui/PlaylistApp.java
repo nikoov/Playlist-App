@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+   // creates a ui for the playlist app
 public class PlaylistApp {
     private Map<String, Playlist> playlists;
     private Map<String, Category> categories;
@@ -34,7 +35,7 @@ public class PlaylistApp {
             }
         }
     }
-
+    // provides the display menu
     private void displayMenu() {
         System.out.println("\nSelect an option:");
         System.out.println("\tcreate -> Create a new playlist");
@@ -86,14 +87,14 @@ public class PlaylistApp {
                 System.out.println("Invalid command");
         }
     }
-
+    //creates a playlist in my UI and asks for the user to enter playlist name
     private void createPlaylist() {
         System.out.print("Enter playlist name: ");
         String name = scanner.nextLine();
         playlists.put(name, new Playlist(name));
         System.out.println("Playlist created.");
     }
-
+    //views the playlist
     private void viewPlaylist() {
         System.out.print("Enter playlist name: ");
         String name = scanner.nextLine();
@@ -106,7 +107,7 @@ public class PlaylistApp {
             System.out.println("Playlist not found.");
         }
     }
-
+    //adds songs to the playlist
     private void addSongToPlaylist() {
         System.out.print("Enter playlist name: ");
         String playlistName = scanner.nextLine();
@@ -125,7 +126,7 @@ public class PlaylistApp {
             System.out.println("Playlist not found.");
         }
     }
-
+    //removes songs from the playlist
     private void removeSongFromPlaylist() {
         System.out.print("Enter playlist name: ");
         String playlistName = scanner.nextLine();
@@ -149,7 +150,7 @@ public class PlaylistApp {
             System.out.println("Playlist not found.");
         }
     }
-
+    //Allows the user to rename the playlist
     private void renamePlaylist() {
         System.out.print("Enter current playlist name: ");
         String currentName = scanner.nextLine();
@@ -165,7 +166,7 @@ public class PlaylistApp {
             System.out.println("Playlist not found.");
         }
     }
-
+    //allows the user to create categories for music
     private void createCategory() {
         System.out.print("Enter category name: ");
         String name = scanner.nextLine();
