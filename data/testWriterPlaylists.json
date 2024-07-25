@@ -1,1 +1,38 @@
-{"Jazz Favorites":{"songs":[{"artist":"Miles Davis","title":"So What","category":"Jazz"},{"artist":"Dave Brubeck","title":"Take Five","category":"Jazz"}],"name":"Jazz Favorites"},"Rock Classics":{"songs":[{"artist":"Queen","title":"Bohemian Rhapsody","category":"Rock"},{"artist":"Eagles","title":"Hotel California","category":"Rock"}],"name":"Rock Classics"}}
+{"playlists": [
+    {
+        "songs": {
+            "songs": [
+                {
+                    "artist": "Miles Davis",
+                    "title": "So What",
+                    "category": "Jazz"
+                },
+                {
+                    "artist": "Dave Brubeck",
+                    "title": "Take Five",
+                    "category": "Jazz"
+                }
+            ],
+            "name": "Jazz Favorites"
+        },
+        "name": "Jazz Favorites"
+    },
+    {
+        "songs": {
+            "songs": [
+                {
+                    "artist": "Queen",
+                    "title": "Bohemian Rhapsody",
+                    "category": "Rock"
+                },
+                {
+                    "artist": "Eagles",
+                    "title": "Hotel California",
+                    "category": "Rock"
+                }
+            ],
+            "name": "Rock Classics"
+        },
+        "name": "Rock Classics"
+    }
+]}

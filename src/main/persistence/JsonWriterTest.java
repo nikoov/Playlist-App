@@ -2,7 +2,6 @@ package persistence;
 
 import model.Playlist;
 import model.Song;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
@@ -30,25 +29,19 @@ class JsonWriterTest {
             playlists.put("Rock Classics", playlist1);
             playlists.put("Jazz Favorites", playlist2);
 
-            // Convert the map to a JSONObject
-            JSONObject json = new JSONObject();
-            for (Map.Entry<String, Playlist> entry : playlists.entrySet()) {
-                json.put(entry.getKey(), entry.getValue().toJson());
-            }
-
             // Write to file
             JsonWriter writer = new JsonWriter("./data/testWriterPlaylists.json");
             writer.open();
-            writer.write(json);
+            writer.write(playlists);
             writer.close();
 
             // Read back from file
             JsonReader reader = new JsonReader("./data/testWriterPlaylists.json");
-            JSONObject readJson = reader.read();
-            for (String key : json.keySet()) {
-                JSONObject expectedJson = json.getJSONObject(key);
-                JSONObject actualJson = readJson.getJSONObject(key);
-                assertEquals(expectedJson.toString(), actualJson.toString());
+            Map<String, Playlist> readPlaylists = reader.read();
+            assertEquals(playlists.size(), readPlaylists.size());
+            for (String key : playlists.keySet()) {
+                assertTrue(readPlaylists.containsKey(key));
+                assertEquals(playlists.get(key).toJson().toString(), readPlaylists.get(key).toJson().toString());
             }
         } catch (FileNotFoundException e) {
             fail("FileNotFoundException should not have been thrown");
@@ -62,18 +55,17 @@ class JsonWriterTest {
         try {
             // Create an empty map of playlists
             Map<String, Playlist> playlists = new HashMap<>();
-            JSONObject json = new JSONObject(); // Empty JSON object
 
             // Write to file
             JsonWriter writer = new JsonWriter("./data/testWriterEmptyPlaylists.json");
             writer.open();
-            writer.write(json);
+            writer.write(playlists);
             writer.close();
 
             // Read back from file
             JsonReader reader = new JsonReader("./data/testWriterEmptyPlaylists.json");
-            JSONObject readJson = reader.read();
-            assertTrue(readJson.isEmpty());
+            Map<String, Playlist> readPlaylists = reader.read();
+            assertTrue(readPlaylists.isEmpty());
         } catch (FileNotFoundException e) {
             fail("FileNotFoundException should not have been thrown");
         } catch (IOException e) {
@@ -90,28 +82,22 @@ class JsonWriterTest {
             playlist.addSong(new Song("Yesterday", "The Beatles", "Pop"));
             playlists.put("Solo Hits", playlist);
 
-            // Convert the map to a JSONObject
-            JSONObject json = new JSONObject();
-            json.put("Solo Hits", playlist.toJson());
-
             // Write to file
             JsonWriter writer = new JsonWriter("./data/testWriterSinglePlaylist.json");
             writer.open();
-            writer.write(json);
+            writer.write(playlists);
             writer.close();
 
             // Read back from file
             JsonReader reader = new JsonReader("./data/testWriterSinglePlaylist.json");
-            JSONObject readJson = reader.read();
-            JSONObject expectedJson = json.getJSONObject("Solo Hits");
-            JSONObject actualJson = readJson.getJSONObject("Solo Hits");
-            assertEquals(expectedJson.toString(), actualJson.toString());
+            Map<String, Playlist> readPlaylists = reader.read();
+            assertEquals(1, readPlaylists.size());
+            assertTrue(readPlaylists.containsKey("Solo Hits"));
+            assertEquals(playlists.get("Solo Hits").toJson().toString(), readPlaylists.get("Solo Hits").toJson().toString());
         } catch (FileNotFoundException e) {
             fail("FileNotFoundException should not have been thrown");
         } catch (IOException e) {
             fail("IOException should not have been thrown");
         }
     }
-
-
 }

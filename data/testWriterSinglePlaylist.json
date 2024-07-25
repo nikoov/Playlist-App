@@ -1,1 +1,11 @@
-{"Solo Hits":{"songs":[{"artist":"The Beatles","title":"Yesterday","category":"Pop"}],"name":"Solo Hits"}}
+{"playlists": [{
+    "songs": {
+        "songs": [{
+            "artist": "The Beatles",
+            "title": "Yesterday",
+            "category": "Pop"
+        }],
+        "name": "Solo Hits"
+    },
+    "name": "Solo Hits"
+}]}

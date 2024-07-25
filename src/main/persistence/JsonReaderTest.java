@@ -21,7 +21,7 @@ class JsonReaderTest {
     void testReaderEmptyPlaylists() {
         JsonReader reader = new JsonReader("./data/testReaderEmptyPlaylists.json");
         try {
-            JSONObject playlists = reader.read();
+            Map<String, Playlist> playlists = reader.read();
             assertFalse(playlists.isEmpty());
         } catch (IOException e) {
             fail("Couldn't read from file");

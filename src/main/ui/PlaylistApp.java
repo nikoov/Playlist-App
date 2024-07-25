@@ -7,6 +7,7 @@ import persistence.JsonWriter;
 import persistence.JsonReader;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -116,7 +117,7 @@ public class PlaylistApp {
         System.out.println("Playlist created.");
     }
 
-    // views the playlist
+    //REQUIRES: views the playlist
     private void viewPlaylist() {
         System.out.print("Enter playlist name: ");
         String name = scanner.nextLine();
@@ -130,7 +131,7 @@ public class PlaylistApp {
         }
     }
 
-    // adds songs to the playlist
+    //REQUIRES: adds songs to the playlist
     private void addSongToPlaylist() {
         System.out.print("Enter playlist name: ");
         String playlistName = scanner.nextLine();
@@ -150,7 +151,7 @@ public class PlaylistApp {
         }
     }
 
-    // removes songs from the playlist
+    //REQUIRES: removes songs from the playlist
     private void removeSongFromPlaylist() {
         System.out.print("Enter playlist name: ");
         String playlistName = scanner.nextLine();
@@ -175,7 +176,7 @@ public class PlaylistApp {
         }
     }
 
-    // allows the user to rename the playlist
+    //REQUIRES: allows the user to rename the playlist
     private void renamePlaylist() {
         System.out.print("Enter current playlist name: ");
         String currentName = scanner.nextLine();
@@ -192,7 +193,7 @@ public class PlaylistApp {
         }
     }
 
-    // allows the user to create categories for music
+    //REQUIRES: allows the user to create categories for music
     private void createCategory() {
         System.out.print("Enter category name: ");
         String name = scanner.nextLine();
@@ -200,7 +201,7 @@ public class PlaylistApp {
         System.out.println("Category created.");
     }
 
-    // allows user to input a song to a specific category
+    //REQUIRES: allows user to input a song to a specific category
     private void addSongToCategory() {
         System.out.print("Enter category name: ");
         String categoryName = scanner.nextLine();
@@ -220,7 +221,7 @@ public class PlaylistApp {
         }
     }
 
-    // allows the user to view a certain category
+    //REQUIRES: allows the user to view a certain category
     private void viewCategory() {
         System.out.print("Enter category name: ");
         String name = scanner.nextLine();
@@ -274,36 +275,41 @@ public class PlaylistApp {
     }
 
     // saves playlists to a JSON file
+
+    // MODIFIES: this
+    // EFFECTS: saves playlists to file
     private void savePlaylists() {
-        JSONObject json = new JSONObject();
-        for (Map.Entry<String, Playlist> entry : playlists.entrySet()) {
-            json.put(entry.getKey(), entry.getValue().toJson());
-        }
         try {
             jsonWriter.open();
-            jsonWriter.write(json);
+            jsonWriter.write(playlists);
             jsonWriter.close();
             System.out.println("Playlists saved to " + JSON_STORE);
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             System.out.println("Unable to save playlists to " + JSON_STORE);
         }
     }
 
-
-    // loads playlists from a JSON file
+    // MODIFIES: this
+    // EFFECTS: loads playlists from file
     private void loadPlaylists() {
         try {
-            JSONObject json = jsonReader.read();
-            playlists.clear();
-            for (String name : json.keySet()) {
-                playlists.put(name, Playlist.fromJson(json.getJSONObject(name)));
-            }
+            Map<String, Playlist> loadedPlaylists = jsonReader.read();
             System.out.println("Playlists loaded from " + JSON_STORE);
+            // Print loaded playlists for verification
+            System.out.println("Loaded playlists:");
+            for (Map.Entry<String, Playlist> entry : loadedPlaylists.entrySet()) {
+                System.out.println("Playlist: " + entry.getKey());
+                Playlist playlist = entry.getValue();
+                for (Song song : playlist.viewSongs()) {
+                    System.out.println("\t" + song.getTitle() + " by " + song.getArtist() + " (" + song.getCategory() + ")");
+                }
+            }
+            // Assign loaded playlists to the main playlists map
+            playlists.putAll(loadedPlaylists);
         } catch (IOException e) {
-            System.out.println("Unable to load playlists from " + JSON_STORE);
+            System.out.println("Unable to read from file: " + JSON_STORE);
         }
     }
-
 
     public static void main(String[] args) {
         new PlaylistApp();

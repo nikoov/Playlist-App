@@ -1,1 +1,24 @@
-{"Summer":{"songs":[{"artist":"Lana del rey","title":"summertime sadness","category":"music"},{"artist":"Lana del rey","title":"Video Games","category":"music"}],"name":"Summer"}}
+{"playlists": [
+    {
+        "songs": {
+            "songs": [{
+                "artist": "taylor swift",
+                "title": "red",
+                "category": "music"
+            }],
+            "name": "sad"
+        },
+        "name": "sad"
+    },
+    {
+        "songs": {
+            "songs": [{
+                "artist": "lana del rey",
+                "title": "summertime sadness",
+                "category": "music"
+            }],
+            "name": "Summer"
+        },
+        "name": "Summer"
+    }
+]}
