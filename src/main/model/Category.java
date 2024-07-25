@@ -55,8 +55,8 @@ public class Category {
     public List<Song> searchSongs(String query) {
         List<Song> results = new ArrayList<>();
         for (Song song : songs) {
-            if (song.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                    song.getArtist().toLowerCase().contains(query.toLowerCase())) {
+            if (song.getTitle().toLowerCase().contains(query.toLowerCase())
+                    || song.getArtist().toLowerCase().contains(query.toLowerCase())) {
                 results.add(song);
             }
         }
