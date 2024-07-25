@@ -21,3 +21,5 @@ As a young individual who loves music and spends a lot of time listening to musi
 3. **As a user, I want to be able to categorize my songs**
 
 4. **As a user, I want to be able to search for songs or artists in my playlist**
+5. **As a user, I want to be able to save my playlist**
+6. **As a user, I want to be able to load my playlist**
