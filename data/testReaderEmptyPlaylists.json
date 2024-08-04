@@ -2,7 +2,7 @@
     {
         "songs": {
             "songs": [{
-                "artist": "taylor swift",
+                "artist": "taylor",
                 "title": "red",
                 "category": "music"
             }],
@@ -12,13 +12,9 @@
     },
     {
         "songs": {
-            "songs": [{
-                "artist": "lana del rey",
-                "title": "summertime sadness",
-                "category": "music"
-            }],
-            "name": "Summer"
+            "songs": [],
+            "name": "Summer "
         },
-        "name": "Summer"
+        "name": "Summer "
     }
 ]}
