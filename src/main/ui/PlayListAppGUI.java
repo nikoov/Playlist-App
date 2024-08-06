@@ -59,19 +59,47 @@ public class PlayListAppGUI extends JFrame {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
+        JPanel leftPanel = createLeftPanel();
+        JPanel rightPanel = createRightPanel();
+
+        mainPanel.add(leftPanel, BorderLayout.WEST);
+        mainPanel.add(rightPanel, BorderLayout.EAST);
+
+        add(mainPanel);
+    }
+
+
+    //MODIFIES: This instance (PlayListAppGUI) by adding and arranging GUI components.
+    //EFFECTS: Sets up and arranges GUI components on the frame.
+    private JPanel createLeftPanel() {
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
 
-        // Row 1: Playlist name and Create Playlist button
+        leftPanel.add(createPlaylistPanel());
+        leftPanel.add(addSongPanel());
+        leftPanel.add(searchPanel());
+        leftPanel.add(filePanel());
+        leftPanel.add(createPlaylistDisplayPanel());
+        leftPanel.add(createBlueCirclePanel());
+
+        return leftPanel;
+    }
+
+    //MODIFIES: This instance (PlayListAppGUI) by adding and arranging GUI components.
+    //EFFECTS: Sets up and arranges playlist panel
+    private JPanel createPlaylistPanel() {
         JPanel createPlaylistPanel = new JPanel();
         createPlaylistPanel.add(new JLabel("Playlist Name:"));
         createPlaylistPanel.add(playlistNameField);
         JButton createPlaylistButton = new JButton("Create Playlist");
         createPlaylistButton.addActionListener(this::createPlaylistAction);
         createPlaylistPanel.add(createPlaylistButton);
-        leftPanel.add(createPlaylistPanel);
+        return createPlaylistPanel;
+    }
 
-        // Row 2: Song details and Add Song button
+    //MODIFIES: This instance (PlayListAppGUI) by adding and arranging GUI components.
+    //EFFECTS: Sets up and arranges add song details panel
+    private JPanel addSongPanel() {
         JPanel addSongPanel = new JPanel();
         addSongPanel.add(new JLabel("Song Name:"));
         addSongPanel.add(songNameField);
@@ -82,9 +110,12 @@ public class PlayListAppGUI extends JFrame {
         JButton addSongButton = new JButton("Add Song");
         addSongButton.addActionListener(this::addSongAction);
         addSongPanel.add(addSongButton);
-        leftPanel.add(addSongPanel);
+        return addSongPanel;
+    }
 
-        // Row 3: Search field, Search button, View Playlist button, Remove Song button
+    //MODIFIES: This instance (PlayListAppGUI) by adding and arranging GUI components.
+    //EFFECTS: Sets up and arranges the search button
+    private JPanel searchPanel() {
         JPanel searchPanel = new JPanel();
         searchPanel.add(new JLabel("Search:"));
         searchPanel.add(searchField);
@@ -100,9 +131,12 @@ public class PlayListAppGUI extends JFrame {
         removeSongButton.addActionListener(this::removeSongAction);
         searchPanel.add(removeSongButton);
 
-        leftPanel.add(searchPanel);
+        return searchPanel;
+    }
 
-        // Row 4: Save, Load, and Quit buttons
+    //MODIFIES: This instance (PlayListAppGUI) by adding and arranging GUI components.
+    //EFFECTS: Sets up and arranges GUI save , load and quit buttons
+    private JPanel filePanel() {
         JPanel filePanel = new JPanel();
         JButton saveButton = new JButton("Save");
         saveButton.addActionListener(this::savePlaylistsAction);
@@ -116,13 +150,21 @@ public class PlayListAppGUI extends JFrame {
         quitButton.addActionListener(this::quitApplicationAction);
         filePanel.add(quitButton);
 
-        leftPanel.add(filePanel);
+        return filePanel;
+    }
 
-        // Playlist display
+    //MODIFIES: This instance (PlayListAppGUI) by adding and arranging GUI components.
+    //EFFECTS: Sets up and arranges GUI components on the frame.
+    private JPanel createPlaylistDisplayPanel() {
         JScrollPane playlistScrollPane = new JScrollPane(playlistJList);
-        leftPanel.add(playlistScrollPane);
+        JPanel playlistDisplayPanel = new JPanel();
+        playlistDisplayPanel.add(playlistScrollPane);
+        return playlistDisplayPanel;
+    }
 
-        // Blue Circle display
+    //MODIFIES: This instance (PlayListAppGUI) by adding and arranging GUI components.
+    //EFFECTS: Sets up and arranges GUI components by creating a blue circle
+    private JPanel createBlueCirclePanel() {
         JPanel circlePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -133,22 +175,19 @@ public class PlayListAppGUI extends JFrame {
             }
         };
         circlePanel.setPreferredSize(new Dimension(120, 120));
-        leftPanel.add(circlePanel);
+        return circlePanel;
+    }
 
-        // Add left panel to main panel
-        mainPanel.add(leftPanel, BorderLayout.WEST);
-
-        // Song Details panel
+    //MODIFIES: This instance (PlayListAppGUI) by adding and arranging GUI components.
+    //EFFECTS: Sets up and arranges GUI components to have a panel that includes
+    //details
+    private JPanel createRightPanel() {
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout());
         songDetailsLabel = new JLabel("Song details will appear here", SwingConstants.CENTER);
         songDetailsLabel.setPreferredSize(new Dimension(300, 600)); // Set preferred size
         rightPanel.add(songDetailsLabel, BorderLayout.CENTER);
-
-        // Add right panel to main panel
-        mainPanel.add(rightPanel, BorderLayout.EAST);
-
-        add(mainPanel);
+        return rightPanel;
     }
 
       //MODIFIES: This instance (PlayListAppGUI) by updating the current playlist and playlistModel.
@@ -165,9 +204,8 @@ public class PlayListAppGUI extends JFrame {
         }
     }
 
-    //MO
-    //
-    // DIFIES: This instance (PlayListAppGUI) by adding the song to the current playlist and updating playlistModel.
+
+    //MODIFIES: This instance (PlayListAppGUI) by adding the song to the current playlist and updating playlistModel.
     //EFFECTS: Adds a song to the current playlist and displays a confirmation message.
     //REQUIRES: A playlist must be created first. Song details must not be empty.
 
@@ -192,6 +230,12 @@ public class PlayListAppGUI extends JFrame {
         }
     }
 
+
+    //MODIFIES: This instance (PlayListAppGUI) by updating the playlistModel with search results.
+    //EFFECTS: Displays songs that match the search query.
+    //REQUIRES: A playlist must be created first. The search query must not be empty.
+
+
     private void searchSongAction(ActionEvent e) {
         if (currentPlaylist == null) {
             JOptionPane.showMessageDialog(this, "Create a playlist first.");
@@ -207,6 +251,10 @@ public class PlayListAppGUI extends JFrame {
         }
     }
 
+
+    //MODIFIES: This instance (PlayListAppGUI) by updating the playlistModel with the current playlist.
+    //EFFECTS: Displays the current playlist and its songs.
+    //REQUIRES: A playlist must be created.
     private void viewPlaylistAction(ActionEvent e) {
         if (currentPlaylist == null) {
             JOptionPane.showMessageDialog(this, "Create a playlist first.");
@@ -218,6 +266,11 @@ public class PlayListAppGUI extends JFrame {
             playlistModel.addElement(song.toString());
         }
     }
+
+
+    //MODIFIES: This instance (PlayListAppGUI) by removing the selected song from the current playlist and updating playlistModel.
+    //EFFECTS: Removes the selected song from the playlist and updates the display.
+    //REQUIRES: A playlist must be created and a song must be selected.
 
     private void removeSongAction(ActionEvent e) {
         int selectedIndex = playlistJList.getSelectedIndex();
@@ -241,6 +294,10 @@ public class PlayListAppGUI extends JFrame {
         }
     }
 
+    //MODIFIES: This instance (PlayListAppGUI) by loading playlists from a JSON file and updating the playlists map.
+    //EFFECTS: Loads playlists from a JSON file and updates the playlistModel.
+    //REQUIRES: None
+
     private void savePlaylistsAction(ActionEvent e) {
         try {
             jsonWriter.open();
@@ -253,6 +310,9 @@ public class PlayListAppGUI extends JFrame {
         }
     }
 
+    //MODIFIES: This instance (PlayListAppGUI) by saving the playlists to a JSON file.
+    //EFFECTS: Saves the playlists to a JSON file and displays a confirmation message.
+    //REQUIRES: None
     private void loadPlaylistsAction(ActionEvent e) {
         try {
             playlists = jsonReader.read();
@@ -274,12 +334,19 @@ public class PlayListAppGUI extends JFrame {
         }
     }
 
+    //MODIFIES: This instance (PlayListAppGUI) by loading playlists from a JSON file and updating the playlists map.
+    //EFFECTS: Loads playlists from a JSON file and updates the playlistModel.
+    // REQUIRES: None
+
     private void quitApplicationAction(ActionEvent e) {
-        int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Quit", JOptionPane.YES_NO_OPTION);
+        int response = JOptionPane.showConfirmDialog(this, "Do you want to quit?", "Quit", JOptionPane.YES_NO_OPTION);
         if (response == JOptionPane.YES_OPTION) {
             System.exit(0);
         }
     }
+
+    //MODIFIES: This instance (PlayListAppGUI) by closing the application.
+     //EFFECTS: Exits the application.
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
