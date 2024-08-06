@@ -269,7 +269,8 @@ public class PlayListAppGUI extends JFrame {
     }
 
 
-    //MODIFIES: This instance (PlayListAppGUI) by removing the selected song from the current playlist and updating playlistModel.
+    //MODIFIES: This instance (PlayListAppGUI) by removing the selected song from the
+    //current playlist and updating playlistModel.
     //EFFECTS: Removes the selected song from the playlist and updates the display.
     //REQUIRES: A playlist must be created and a song must be selected.
 
