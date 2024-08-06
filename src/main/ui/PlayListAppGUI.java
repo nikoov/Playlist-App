@@ -340,7 +340,8 @@ public class PlayListAppGUI extends JFrame {
     // REQUIRES: None
 
     private void quitApplicationAction(ActionEvent e) {
-        int response = JOptionPane.showConfirmDialog(this, "Do you want to quit?", "Quit", JOptionPane.YES_NO_OPTION);
+        int response = JOptionPane.showConfirmDialog(this, "Do you want to quit?", "Quit",
+                JOptionPane.YES_NO_OPTION);
         if (response == JOptionPane.YES_OPTION) {
             System.exit(0);
         }
