@@ -205,7 +205,8 @@ public class PlayListAppGUI extends JFrame {
     }
 
 
-    //MODIFIES: This instance (PlayListAppGUI) by adding the song to the current playlist and updating playlistModel.
+    //MODIFIES: This instance (PlayListAppGUI) by adding the song to the current playlist
+    //and updating playlistModel.
     //EFFECTS: Adds a song to the current playlist and displays a confirmation message.
     //REQUIRES: A playlist must be created first. Song details must not be empty.
 
