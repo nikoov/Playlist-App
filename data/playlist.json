@@ -1,0 +1,43 @@
+{"playlists": [
+    {
+        "songs": {
+            "songs": [
+                {
+                    "artist": "one",
+                    "name": "one",
+                    "category": "music"
+                },
+                {
+                    "artist": "two",
+                    "name": "two",
+                    "category": "music"
+                }
+            ],
+            "name": "night"
+        },
+        "name": "night"
+    },
+    {
+        "songs": {
+            "songs": [
+                {
+                    "artist": "taylor",
+                    "name": "red",
+                    "category": "music"
+                },
+                {
+                    "artist": "taylor",
+                    "name": "blue",
+                    "category": "music"
+                },
+                {
+                    "artist": "taylor",
+                    "name": "me",
+                    "category": "music"
+                }
+            ],
+            "name": "summer"
+        },
+        "name": "summer"
+    }
+]}

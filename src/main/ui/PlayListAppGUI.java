@@ -2,237 +2,289 @@ package ui;
 
 import model.Playlist;
 import model.Song;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.*;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 public class PlayListAppGUI extends JFrame {
-    private final JTextField playlistNameField = new JTextField(10);
-    private final JTextField songNameField = new JTextField(10);
-    private final JTextField artistNameField = new JTextField(10);
-    private final JTextField categoryField = new JTextField(10);
-    private final JTextField searchField = new JTextField(10);
-    private final DefaultListModel<String> playlistModel = new DefaultListModel<>();
-    private final JList<String> playlistList = new JList<>(playlistModel);
-    private Playlist playlist = null;
+    private JTextField playlistNameField;
+    private JTextField songNameField;
+    private JTextField artistNameField;
+    private JTextField songCategoryField;
+    private JTextField searchField;
+    private DefaultListModel<String> playlistModel;
+    private JList<String> playlistJList;
+    private JLabel songDetailsLabel; // New JLabel for song details
+    private Playlist currentPlaylist;
+    private Map<String, Playlist> playlists;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
+    private static final String JSON_STORE = "./data/playlist.json";
 
+
+    //MODIFIES: This instance (PlayListAppGUI) by setting up and initializing the GUI components.
+    // EFFECTS: Creates and displays the GUI with all necessary components.
+    //REQUIRES: None
     public PlayListAppGUI() {
         super("Playlist Application");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                saveOnClose();
-                System.exit(0);
-            }
-        });
+        setSize(1000, 600); // Increased width to accommodate song details panel
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        playlists = new HashMap<>();
         layoutComponents();
-        setupListeners();
+        jsonWriter = new JsonWriter(JSON_STORE);
+        jsonReader = new JsonReader(JSON_STORE);
     }
 
-    private void layoutComponents() {
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+    //MODIFIES: This instance (PlayListAppGUI) by adding and arranging GUI components.
+    // EFFECTS: Sets up and arranges GUI components on the frame.
+    //REQUIRES: None
 
-        mainPanel.add(createPlaylistPanel());
-        mainPanel.add(createSongInputPanel());
-        mainPanel.add(createSearchPanel());
-        mainPanel.add(createControlPanel());
-        mainPanel.add(createPlaylistListPanel());
+    private void layoutComponents() {
+        playlistNameField = new JTextField(10);
+        songNameField = new JTextField(10);
+        artistNameField = new JTextField(10);
+        songCategoryField = new JTextField(10);
+        searchField = new JTextField(10);
+        playlistModel = new DefaultListModel<>();
+        playlistJList = new JList<>(playlistModel);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+
+        // Row 1: Playlist name and Create Playlist button
+        JPanel createPlaylistPanel = new JPanel();
+        createPlaylistPanel.add(new JLabel("Playlist Name:"));
+        createPlaylistPanel.add(playlistNameField);
+        JButton createPlaylistButton = new JButton("Create Playlist");
+        createPlaylistButton.addActionListener(this::createPlaylistAction);
+        createPlaylistPanel.add(createPlaylistButton);
+        leftPanel.add(createPlaylistPanel);
+
+        // Row 2: Song details and Add Song button
+        JPanel addSongPanel = new JPanel();
+        addSongPanel.add(new JLabel("Song Name:"));
+        addSongPanel.add(songNameField);
+        addSongPanel.add(new JLabel("Artist Name:"));
+        addSongPanel.add(artistNameField);
+        addSongPanel.add(new JLabel("Category:"));
+        addSongPanel.add(songCategoryField);
+        JButton addSongButton = new JButton("Add Song");
+        addSongButton.addActionListener(this::addSongAction);
+        addSongPanel.add(addSongButton);
+        leftPanel.add(addSongPanel);
+
+        // Row 3: Search field, Search button, View Playlist button, Remove Song button
+        JPanel searchPanel = new JPanel();
+        searchPanel.add(new JLabel("Search:"));
+        searchPanel.add(searchField);
+        JButton searchButton = new JButton("Search");
+        searchButton.addActionListener(this::searchSongAction);
+        searchPanel.add(searchButton);
+
+        JButton viewPlaylistButton = new JButton("View Playlist");
+        viewPlaylistButton.addActionListener(this::viewPlaylistAction);
+        searchPanel.add(viewPlaylistButton);
+
+        JButton removeSongButton = new JButton("Remove Song");
+        removeSongButton.addActionListener(this::removeSongAction);
+        searchPanel.add(removeSongButton);
+
+        leftPanel.add(searchPanel);
+
+        // Row 4: Save, Load, and Quit buttons
+        JPanel filePanel = new JPanel();
+        JButton saveButton = new JButton("Save");
+        saveButton.addActionListener(this::savePlaylistsAction);
+        filePanel.add(saveButton);
+
+        JButton loadButton = new JButton("Load");
+        loadButton.addActionListener(this::loadPlaylistsAction);
+        filePanel.add(loadButton);
+
+        JButton quitButton = new JButton("Quit");
+        quitButton.addActionListener(this::quitApplicationAction);
+        filePanel.add(quitButton);
+
+        leftPanel.add(filePanel);
+
+        // Playlist display
+        JScrollPane playlistScrollPane = new JScrollPane(playlistJList);
+        leftPanel.add(playlistScrollPane);
+
+        // Blue Circle display
+        JPanel circlePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setColor(Color.BLUE);
+                g2d.fillOval(10, 10, 100, 100); // Draw a blue circle
+            }
+        };
+        circlePanel.setPreferredSize(new Dimension(120, 120));
+        leftPanel.add(circlePanel);
+
+        // Add left panel to main panel
+        mainPanel.add(leftPanel, BorderLayout.WEST);
+
+        // Song Details panel
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BorderLayout());
+        songDetailsLabel = new JLabel("Song details will appear here", SwingConstants.CENTER);
+        songDetailsLabel.setPreferredSize(new Dimension(300, 600)); // Set preferred size
+        rightPanel.add(songDetailsLabel, BorderLayout.CENTER);
+
+        // Add right panel to main panel
+        mainPanel.add(rightPanel, BorderLayout.EAST);
 
         add(mainPanel);
     }
 
-    private JPanel createPlaylistPanel() {
-        JPanel panel = new JPanel();
-        panel.add(new JLabel("Playlist Name:"));
-        panel.add(playlistNameField);
-        JButton createPlaylistButton = new JButton("Create Playlist");
-        createPlaylistButton.addActionListener(e -> createPlaylistAction());
-        panel.add(createPlaylistButton);
-        return panel;
-    }
-
-    private JPanel createSongInputPanel() {
-        JPanel panel = new JPanel();
-        panel.add(new JLabel("Song Name:"));
-        panel.add(songNameField);
-        panel.add(new JLabel("Artist Name:"));
-        panel.add(artistNameField);
-        panel.add(new JLabel("Category:"));
-        panel.add(categoryField);
-        JButton addSongButton = new JButton("Add Song");
-        addSongButton.addActionListener(e -> addSongAction());
-        panel.add(addSongButton);
-        return panel;
-    }
-
-    private JPanel createSearchPanel() {
-        JPanel panel = new JPanel();
-        panel.add(new JLabel("Search:"));
-        panel.add(searchField);
-        JButton searchButton = new JButton("Search");
-        searchButton.addActionListener(e -> searchAction());
-        panel.add(searchButton);
-        return panel;
-    }
-
-    private JPanel createControlPanel() {
-        JPanel panel = new JPanel();
-        JButton loadButton = new JButton("Load");
-        loadButton.addActionListener(e -> loadAction());
-        JButton saveButton = new JButton("Save");
-        saveButton.addActionListener(e -> saveAction());
-        JButton quitButton = new JButton("Quit");
-        quitButton.addActionListener(e -> quitAction());
-        panel.add(loadButton);
-        panel.add(saveButton);
-        panel.add(quitButton);
-        return panel;
-    }
-
-    private JPanel createPlaylistListPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createTitledBorder("Playlist"));
-        panel.add(new JScrollPane(playlistList), BorderLayout.CENTER);
-        return panel;
-    }
-
-    private void setupListeners() {
-        // Other listeners if needed
-    }
-
-    // MODIFIES: this
-    // EFFECTS: Creates a new playlist with the name entered in the text field
-    private void createPlaylistAction() {
+      //MODIFIES: This instance (PlayListAppGUI) by updating the current playlist and playlistModel.
+      //EFFECTS: Creates a new playlist with the given name and displays a confirmation message.
+      // REQUIRES: The playlist name must not be empty.
+    private void createPlaylistAction(ActionEvent e) {
         String playlistName = playlistNameField.getText().trim();
         if (!playlistName.isEmpty()) {
-            playlist = new Playlist(playlistName);
-            playlistModel.clear();
-            playlistNameField.setText("");
-        } else {
-            JOptionPane.showMessageDialog(this, "Please enter a playlist name.",
-                    "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            currentPlaylist = new Playlist(playlistName);
+            playlists.put(playlistName, currentPlaylist);
+            JOptionPane.showMessageDialog(this, "Playlist created: " + playlistName);
+            playlistModel.clear(); // Clear the playlist display
+            songDetailsLabel.setText("Song details will appear here"); // Reset song details
         }
     }
 
-    // MODIFIES: this, playlist
-    // EFFECTS: Adds a new song to the playlist
-    private void addSongAction() {
+    //MO
+    //
+    // DIFIES: This instance (PlayListAppGUI) by adding the song to the current playlist and updating playlistModel.
+    //EFFECTS: Adds a song to the current playlist and displays a confirmation message.
+    //REQUIRES: A playlist must be created first. Song details must not be empty.
+
+
+    private void addSongAction(ActionEvent e) {
+        if (currentPlaylist == null) {
+            JOptionPane.showMessageDialog(this, "Create a playlist first.");
+            return;
+        }
         String songName = songNameField.getText().trim();
         String artistName = artistNameField.getText().trim();
-        String category = categoryField.getText().trim();
-        if (!songName.isEmpty() && !artistName.isEmpty() && !category.isEmpty()) {
-            Song song = new Song(songName, artistName, category);
-            playlist.addSong(song);
-            playlistModel.addElement(song.toString());
+        String songCategory = songCategoryField.getText().trim();
+        if (!songName.isEmpty() && !artistName.isEmpty() && !songCategory.isEmpty()) {
+            Song song = new Song(songName, artistName, songCategory);
+            currentPlaylist.addSong(song);
+            JOptionPane.showMessageDialog(this, "Song added: " + songName);
             songNameField.setText("");
             artistNameField.setText("");
-            categoryField.setText("");
-        } else {
-            JOptionPane.showMessageDialog(this, "Please fill all song details.",
-                    "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            songCategoryField.setText("");
+            playlistModel.addElement(song.toString());
+            songDetailsLabel.setText("Added song: " + song); // Update song details
         }
     }
 
-    // MODIFIES: this
-    // EFFECTS: Searches for a song or artist in the playlist
-    private void searchAction() {
-        String searchText = searchField.getText().trim().toLowerCase();
-        if (!searchText.isEmpty()) {
-            DefaultListModel<String> searchResults = new DefaultListModel<>();
-            for (int i = 0; i < playlistModel.size(); i++) {
-                String songInfo = playlistModel.getElementAt(i).toLowerCase();
-                if (songInfo.contains(searchText)) {
-                    searchResults.addElement(playlistModel.getElementAt(i));
+    private void searchSongAction(ActionEvent e) {
+        if (currentPlaylist == null) {
+            JOptionPane.showMessageDialog(this, "Create a playlist first.");
+            return;
+        }
+        String searchQuery = searchField.getText().trim();
+        if (!searchQuery.isEmpty()) {
+            List<Song> searchResults = currentPlaylist.searchSongs(searchQuery);
+            playlistModel.clear();
+            for (Song song : searchResults) {
+                playlistModel.addElement(song.toString());
+            }
+        }
+    }
+
+    private void viewPlaylistAction(ActionEvent e) {
+        if (currentPlaylist == null) {
+            JOptionPane.showMessageDialog(this, "Create a playlist first.");
+            return;
+        }
+        playlistModel.clear();
+        playlistModel.addElement("Playlist: " + currentPlaylist.getName()); // Display playlist name
+        for (Song song : currentPlaylist.viewSongs()) {
+            playlistModel.addElement(song.toString());
+        }
+    }
+
+    private void removeSongAction(ActionEvent e) {
+        int selectedIndex = playlistJList.getSelectedIndex();
+        if (selectedIndex != -1) {
+            String selectedSongStr = playlistModel.getElementAt(selectedIndex);
+            Song selectedSong = null;
+            for (Song song : currentPlaylist.viewSongs()) {
+                if (song.toString().equals(selectedSongStr)) {
+                    selectedSong = song;
+                    break;
                 }
             }
-            playlistList.setModel(searchResults);
+            if (selectedSong != null) {
+                playlistModel.removeElementAt(selectedIndex);
+                currentPlaylist.removeSong(selectedSong);
+                JOptionPane.showMessageDialog(this, "Song removed: " + selectedSongStr);
+                songDetailsLabel.setText("Removed song: " + selectedSongStr); // Update song details
+            }
         } else {
-            playlistList.setModel(playlistModel);
+            JOptionPane.showMessageDialog(this, "Select a song to remove.");
         }
     }
 
-    // MODIFIES: this
-    // EFFECTS: Loads the playlist from a file
-    private void loadAction() {
-        JFileChooser fileChooser = new JFileChooser();
-        int returnValue = fileChooser.showOpenDialog(this);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                playlist = (Playlist) ois.readObject();
-                updatePlaylistModel();
-                JOptionPane.showMessageDialog(this, "Playlist loaded successfully.",
-                        "Load Success", JOptionPane.INFORMATION_MESSAGE);
-                // Display pop-up with visual component
-                displayLoadPopup();
-            } catch (IOException | ClassNotFoundException ex) {
-                JOptionPane.showMessageDialog(this, "Error loading playlist: " + ex.getMessage(),
-                        "Load Error", JOptionPane.ERROR_MESSAGE);
-            }
+    private void savePlaylistsAction(ActionEvent e) {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(playlists);
+            jsonWriter.close();
+            JOptionPane.showMessageDialog(this, "Playlists saved to " + JSON_STORE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Failed to save playlists: " + ex.getMessage());
+            ex.printStackTrace(); // Print stack trace for debugging
         }
     }
 
-    // EFFECTS: Displays a pop-up with a visual component after loading
-    private void displayLoadPopup() {
-        JOptionPane.showMessageDialog(this, "Playlist loaded successfully!",
-                "Load Success", JOptionPane.INFORMATION_MESSAGE, new ImageIcon("path/to/music/icon.png"));
-    }
-
-    // MODIFIES: this
-    // EFFECTS: Saves the playlist to a file and clears the current playlist
-    private void saveAction() {
-        JFileChooser fileChooser = new JFileChooser();
-        int returnValue = fileChooser.showSaveDialog(this);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                oos.writeObject(playlist);
+    private void loadPlaylistsAction(ActionEvent e) {
+        try {
+            playlists = jsonReader.read();
+            // Load the first playlist or handle accordingly
+            if (!playlists.isEmpty()) {
+                currentPlaylist = playlists.values().iterator().next();
                 playlistModel.clear();
-                playlist = null;
-                JOptionPane.showMessageDialog(this, "Playlist saved successfully.",
-                        "Save Success", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, "Error saving playlist: " + ex.getMessage(),
-                        "Save Error", JOptionPane.ERROR_MESSAGE);
+                playlistModel.addElement("Playlist: " + currentPlaylist.getName());
+                for (Song song : currentPlaylist.viewSongs()) {
+                    playlistModel.addElement(song.toString());
+                }
+                JOptionPane.showMessageDialog(this, "Playlists loaded from " + JSON_STORE);
+            } else {
+                JOptionPane.showMessageDialog(this, "No playlists found.");
             }
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Failed to load playlists: " + ex.getMessage());
+            ex.printStackTrace(); // Print stack trace for debugging
         }
     }
 
-    // EFFECTS: Saves on close and exits the application
-    private void quitAction() {
-        saveOnClose();
-        System.exit(0);
-    }
-
-    // EFFECTS: Saves the playlist on close if any changes have been made
-    private void saveOnClose() {
-        int confirm = JOptionPane.showConfirmDialog(this, "Do you want to save the playlist before exiting?",
-                "Save on Exit", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            saveAction();
-        }
-    }
-
-    // MODIFIES: this
-    // EFFECTS: Updates the playlist model with the current playlist
-    private void updatePlaylistModel() {
-        playlistModel.clear();
-        for (Song song : playlist.viewSongs()) {
-            playlistModel.addElement(song.toString());
+    private void quitApplicationAction(ActionEvent e) {
+        int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Quit", JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+            System.exit(0);
         }
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new PlayListAppGUI().setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            PlayListAppGUI app = new PlayListAppGUI();
+            app.setVisible(true);
+        });
     }
 }

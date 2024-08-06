@@ -44,6 +44,16 @@ public class Playlist implements Writable {
         Collections.shuffle(songs);
     }
 
+    public List<Song> searchSongs(String query) {
+        List<Song> results = new ArrayList<>();
+        for (Song song : songs) {
+            if (song.getName().contains(query) || song.getArtist().contains(query)) {
+                results.add(song);
+            }
+        }
+        return results;
+    }
+
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();

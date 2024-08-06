@@ -108,7 +108,7 @@ public class PlaylistApp {
         Playlist playlist = playlists.get(name);
         if (playlist != null) {
             for (Song song : playlist.viewSongs()) {
-                System.out.println(song.getTitle() + " by " + song.getArtist());
+                System.out.println(song.getName() + " by " + song.getArtist());
             }
         } else {
             System.out.println("Playlist not found.");
@@ -145,7 +145,7 @@ public class PlaylistApp {
             String title = scanner.nextLine();
             boolean removed = false;
             for (Song song : playlist.viewSongs()) {
-                if (song.getTitle().equals(title)) {
+                if (song.getName().equals(title)) {
                     playlist.removeSong(song);
                     removed = true;
                     System.out.println("Song removed from playlist.");
@@ -212,7 +212,7 @@ public class PlaylistApp {
         Category category = categories.get(name);
         if (category != null) {
             for (Song song : category.viewSongs()) {
-                System.out.println(song.getTitle() + " by " + song.getArtist());
+                System.out.println(song.getName() + " by " + song.getArtist());
             }
         } else {
             System.out.println("Category not found.");
@@ -244,9 +244,9 @@ public class PlaylistApp {
             String query = scanner.nextLine();
             boolean found = false;
             for (Song song : playlist.viewSongs()) {
-                if (song.getTitle().equalsIgnoreCase(query)
+                if (song.getName().equalsIgnoreCase(query)
                         || song.getArtist().equalsIgnoreCase(query)) {
-                    System.out.println("Found: " + song.getTitle()
+                    System.out.println("Found: " + song.getName()
                             + " by " + song.getArtist());
                     found = true;
                 }
@@ -282,7 +282,7 @@ public class PlaylistApp {
                 System.out.println("Playlist: " + entry.getKey());
                 Playlist playlist = entry.getValue();
                 for (Song song : playlist.viewSongs()) {
-                    System.out.println("\t" + song.getTitle() + " by "
+                    System.out.println("\t" + song.getName() + " by "
                             + song.getArtist() + " ("
                             + song.getCategory() + ")");
                 }

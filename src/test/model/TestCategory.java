@@ -27,6 +27,6 @@ public class TestCategory {
         // Test searchSongs
         List<Song> searchResults = category.searchSongs("Queen");
         assertEquals(1, searchResults.size());
-        assertEquals("Bohemian Rhapsody", searchResults.get(0).getTitle());
+        assertEquals("Bohemian Rhapsody", searchResults.get(0).getName());
     }
 }
