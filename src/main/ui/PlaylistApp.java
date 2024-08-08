@@ -23,6 +23,8 @@ public class PlaylistApp {
     private JsonReader jsonReader;
     private Map<String, Runnable> commandMap;
 
+    //MODIFIES: the instance of a console user interface
+    //Effects: creates a console bases user interface
     public PlaylistApp() {
         playlists = new HashMap<>();
         categories = new HashMap<>();
@@ -33,6 +35,7 @@ public class PlaylistApp {
         runPlaylistApp();
     }
 
+    //EFFECTS: initializes the command required to run the application
     private void initializeCommands() {
         commandMap = new HashMap<>();
         commandMap.put("create", this::createPlaylist);
@@ -49,6 +52,8 @@ public class PlaylistApp {
         commandMap.put("load", this::loadPlaylists);
     }
 
+    //MODIFIES: this
+    //EFFECTS: runs the console based user interface
     private void runPlaylistApp() {
         boolean keepGoing = true;
 
@@ -65,6 +70,7 @@ public class PlaylistApp {
         }
     }
 
+    //EFFECTS: creates a menu to display options for user interface
     private void displayMenu() {
         System.out.println("\nSelect an option:");
         System.out.println("\tcreate -> Create a new playlist");
@@ -82,6 +88,8 @@ public class PlaylistApp {
         System.out.println("\tquit -> Quit the application");
     }
 
+    //MODIFIES: this
+    //EFFECTS: ensures the comamnds are valid
     private void processCommand(String command) {
         Runnable action = commandMap.get(command);
         if (action != null) {
@@ -91,6 +99,8 @@ public class PlaylistApp {
         }
     }
 
+    //MODIFIES:this
+    //EFFECTS:creates playlist
     private void createPlaylist() {
         System.out.print("Enter playlist name: ");
         String name = scanner.nextLine();
@@ -99,6 +109,8 @@ public class PlaylistApp {
         System.out.println("Playlist created.");
     }
 
+    //MODIFIES:this
+    //EFFECTS:views the playlist created
     private void viewPlaylist() {
         System.out.print("Enter playlist name: ");
         String name = scanner.nextLine();
@@ -112,6 +124,8 @@ public class PlaylistApp {
         }
     }
 
+    //MODIFIES:this
+    //EFFECTS:adds song
     private void addSongToPlaylist() {
         System.out.print("Enter playlist name: ");
         String playlistName = scanner.nextLine();
@@ -133,6 +147,8 @@ public class PlaylistApp {
         }
     }
 
+    //MODIFIES:this
+    //EFFECTS:removes song
     private void removeSongFromPlaylist() {
         System.out.print("Enter playlist name: ");
         String playlistName = scanner.nextLine();
@@ -159,6 +175,8 @@ public class PlaylistApp {
         }
     }
 
+    //MODIFIES:this
+    //EFFECTS:renames the name of the playlist
     private void renamePlaylist() {
         System.out.print("Enter current playlist name: ");
         String currentName = scanner.nextLine();
@@ -177,6 +195,8 @@ public class PlaylistApp {
         }
     }
 
+    //MODIFIES:this
+    //EFFECTS:creates category for each song
     private void createCategory() {
         System.out.print("Enter category name: ");
         String name = scanner.nextLine();
@@ -185,6 +205,8 @@ public class PlaylistApp {
         System.out.println("Category created.");
     }
 
+    //MODIFIES:this
+    //EFFECTS:adds song to playlist
     private void addSongToCategory() {
         System.out.print("Enter category name: ");
         String categoryName = scanner.nextLine();
@@ -206,6 +228,8 @@ public class PlaylistApp {
         }
     }
 
+    //MODIFIES:this
+    //EFFECTS: allows you to view each song category
     private void viewCategory() {
         System.out.print("Enter category name: ");
         String name = scanner.nextLine();
@@ -219,6 +243,8 @@ public class PlaylistApp {
         }
     }
 
+    //MODIFIES:this
+    //EFFECTS:shuffles the songs order in the playlist
     private void shufflePlaylist() {
         System.out.print("Enter playlist name to shuffle: ");
         String name = scanner.nextLine();
@@ -232,6 +258,9 @@ public class PlaylistApp {
         }
     }
 
+    //MODIFIES:this
+    //REQUIRES: needs songs to exists in the playlist
+    //EFFECTS: searches the songs in the existing playlist
     private void searchSongInPlaylist() {
         System.out.print("Enter playlist name to search in: ");
         String playlistName = scanner.nextLine();
@@ -254,6 +283,8 @@ public class PlaylistApp {
         }
     }
 
+    //MODIFIES:this
+    //EFFECTS:saves all the data saved on the playlist
     private void savePlaylists() {
         try {
             jsonWriter.open();
@@ -266,6 +297,8 @@ public class PlaylistApp {
         }
     }
 
+    //MODIFIES:this
+    //EFFECTS:loads all the data saved in the playlist
     private void loadPlaylists() {
         try {
             Map<String, Playlist> loadedPlaylists = jsonReader.read();
@@ -286,6 +319,8 @@ public class PlaylistApp {
         }
     }
 
+    //MODIFIES:this
+    //EFFECTS: prints out all the logged events on the playlist
     private void printEventLog() {
         for (Event event : EventLog.getInstance()) {
             System.out.println(event.getDate() + " - " + event.getDescription());

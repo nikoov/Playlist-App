@@ -57,6 +57,9 @@ public class PlayListAppGUI extends JFrame {
 
 
 
+    //MODIFIES:this instance by printing logged events
+    //EFFECTS:prints out all the logged events on the console after
+    //quiting the application
     private void printLoggedEvents() {
         for (Event event : eventLog) {
             System.out.println(event.getDescription());
