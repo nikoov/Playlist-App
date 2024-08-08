@@ -23,3 +23,12 @@ As a young individual who loves music and spends a lot of time listening to musi
 4. **As a user, I want to be able to search for songs or artists in my playlist**
 5. **As a user, I want to be able to save my playlist**
 6. **As a user, I want to be able to load my playlist**
+Phase 4 :Task 3: 
+After reviewing the UML class diagram and the current design, one area that could benefit from refactoring is the handling of playlist and song management. Currently, the Playlist class manages both the collection of Song objects and the logic for searching and updating the playlist. To improve this, it would be beneficial to introduce a separate PlaylistManager class that encapsulates playlist operations such as adding, removing, and searching for songs. This separation would help to isolate playlist management logic from the core Playlist data structure, making it easier to manage and extend the functionality in the future.
+Phase 4 : Task 2:
+   Playlist created: summer
+   Song added: summertime by lana to playlist summer
+   Song added: summertime
+   Song added: video games by lana to playlist summer
+   Song added: video games
+
