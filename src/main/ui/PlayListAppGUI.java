@@ -4,10 +4,15 @@ import model.Playlist;
 import model.Song;
 import persistence.JsonReader;
 import persistence.JsonWriter;
+import model.EventLog;
+import model.Event;
+
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +32,7 @@ public class PlayListAppGUI extends JFrame {
     private Map<String, Playlist> playlists;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
+    private EventLog eventLog;
     private static final String JSON_STORE = "./data/playlist.json";
 
 
@@ -35,13 +41,28 @@ public class PlayListAppGUI extends JFrame {
     //REQUIRES: None
     public PlayListAppGUI() {
         super("Playlist Application");
-        setSize(1000, 600); // Increased width to accommodate song details panel
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        playlists = new HashMap<>();
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        eventLog = EventLog.getInstance();
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // Print all logged events before closing
+                printLoggedEvents();
+                System.exit(0);
+            }
+        });
         layoutComponents();
-        jsonWriter = new JsonWriter(JSON_STORE);
-        jsonReader = new JsonReader(JSON_STORE);
     }
+
+
+
+    private void printLoggedEvents() {
+        for (Event event : eventLog) {
+            System.out.println(event.getDescription());
+        }
+    }
+
 
     //MODIFIES: This instance (PlayListAppGUI) by adding and arranging GUI components.
     // EFFECTS: Sets up and arranges GUI components on the frame.
@@ -190,9 +211,9 @@ public class PlayListAppGUI extends JFrame {
         return rightPanel;
     }
 
-      //MODIFIES: This instance (PlayListAppGUI) by updating the current playlist and playlistModel.
-      //EFFECTS: Creates a new playlist with the given name and displays a confirmation message.
-      // REQUIRES: The playlist name must not be empty.
+    //MODIFIES: This instance (PlayListAppGUI) by updating the current playlist and playlistModel.
+    //EFFECTS: Creates a new playlist with the given name and displays a confirmation message.
+    // REQUIRES: The playlist name must not be empty.
     private void createPlaylistAction(ActionEvent e) {
         String playlistName = playlistNameField.getText().trim();
         if (!playlistName.isEmpty()) {
@@ -227,8 +248,11 @@ public class PlayListAppGUI extends JFrame {
             songCategoryField.setText("");
             playlistModel.addElement(song.toString());
             songDetailsLabel.setText("Added song: " + song); // Update song details
+            // Log the event
+            eventLog.logEvent(new Event("Song added: " + songName));
         }
     }
+
 
 
     //MODIFIES: This instance (PlayListAppGUI) by updating the playlistModel with search results.
@@ -249,6 +273,8 @@ public class PlayListAppGUI extends JFrame {
                 playlistModel.addElement(song.toString());
             }
         }
+        // Log the event
+        eventLog.logEvent(new Event("Searched for songs with query: " + searchQuery));
     }
 
 
@@ -265,6 +291,7 @@ public class PlayListAppGUI extends JFrame {
         for (Song song : currentPlaylist.viewSongs()) {
             playlistModel.addElement(song.toString());
         }
+        eventLog.logEvent(new Event("Viewed playlist: " + currentPlaylist.getName()));
     }
 
 
@@ -289,11 +316,14 @@ public class PlayListAppGUI extends JFrame {
                 currentPlaylist.removeSong(selectedSong);
                 JOptionPane.showMessageDialog(this, "Song removed: " + selectedSongStr);
                 songDetailsLabel.setText("Removed song: " + selectedSongStr); // Update song details
+                // Log the event
+                eventLog.logEvent(new Event("Song removed: " + selectedSongStr));
             }
         } else {
             JOptionPane.showMessageDialog(this, "Select a song to remove.");
         }
     }
+
 
     //MODIFIES: This instance (PlayListAppGUI) by loading playlists from a JSON file and updating the playlists map.
     //EFFECTS: Loads playlists from a JSON file and updates the playlistModel.
@@ -309,6 +339,8 @@ public class PlayListAppGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Failed to save playlists: " + ex.getMessage());
             ex.printStackTrace(); // Print stack trace for debugging
         }
+        // Log the event
+        eventLog.logEvent(new Event("Playlists saved to " + JSON_STORE));
     }
 
     //MODIFIES: This instance (PlayListAppGUI) by saving the playlists to a JSON file.
@@ -333,6 +365,8 @@ public class PlayListAppGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Failed to load playlists: " + ex.getMessage());
             ex.printStackTrace(); // Print stack trace for debugging
         }
+        // Log the event
+        eventLog.logEvent(new Event("Playlists loaded from " + JSON_STORE));
     }
 
     //MODIFIES: This instance (PlayListAppGUI) by loading playlists from a JSON file and updating the playlists map.
@@ -348,7 +382,7 @@ public class PlayListAppGUI extends JFrame {
     }
 
     //MODIFIES: This instance (PlayListAppGUI) by closing the application.
-     //EFFECTS: Exits the application.
+    //EFFECTS: Exits the application.
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -356,4 +390,5 @@ public class PlayListAppGUI extends JFrame {
             app.setVisible(true);
         });
     }
+
 }

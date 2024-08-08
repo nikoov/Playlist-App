@@ -2,17 +2,17 @@
     "songs": {
         "songs": [
             {
-                "artist": "taylor",
-                "name": "red",
+                "artist": "tame impala",
+                "name": "let it happen",
                 "category": "music"
             },
             {
-                "artist": "taylor",
-                "name": "blue",
+                "artist": "lana del rey",
+                "name": "video games",
                 "category": "music"
             }
         ],
-        "name": "summer"
+        "name": "late night"
     },
-    "name": "summer"
+    "name": "late night"
 }]}

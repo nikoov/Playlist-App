@@ -1,6 +1,8 @@
 package ui;
 
 import model.Category;
+import model.Event;
+import model.EventLog;
 import model.Playlist;
 import model.Song;
 import persistence.JsonWriter;
@@ -12,10 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-// Creates UI for playlist app
 public class PlaylistApp {
-    private static final String JSON_STORE = "./data/"
-            + "testReaderEmptyPlaylists.json";
+    private static final String JSON_STORE = "./data/testReaderEmptyPlaylists.json";
     private Map<String, Playlist> playlists;
     private Map<String, Category> categories;
     private Scanner scanner;
@@ -23,7 +23,6 @@ public class PlaylistApp {
     private JsonReader jsonReader;
     private Map<String, Runnable> commandMap;
 
-    // Constructs a playlist app
     public PlaylistApp() {
         playlists = new HashMap<>();
         categories = new HashMap<>();
@@ -50,7 +49,6 @@ public class PlaylistApp {
         commandMap.put("load", this::loadPlaylists);
     }
 
-    // Runs the playlist app menu
     private void runPlaylistApp() {
         boolean keepGoing = true;
 
@@ -60,13 +58,13 @@ public class PlaylistApp {
 
             if (command.equals("quit")) {
                 keepGoing = false;
+                printEventLog();
             } else {
                 processCommand(command);
             }
         }
     }
 
-    // Provides the display menu
     private void displayMenu() {
         System.out.println("\nSelect an option:");
         System.out.println("\tcreate -> Create a new playlist");
@@ -93,15 +91,14 @@ public class PlaylistApp {
         }
     }
 
-    // Creates a playlist in the UI and asks the user to enter playlist name
     private void createPlaylist() {
         System.out.print("Enter playlist name: ");
         String name = scanner.nextLine();
         playlists.put(name, new Playlist(name));
+        EventLog.getInstance().logEvent(new Event("Created playlist: " + name));
         System.out.println("Playlist created.");
     }
 
-    // Views the playlist
     private void viewPlaylist() {
         System.out.print("Enter playlist name: ");
         String name = scanner.nextLine();
@@ -115,7 +112,6 @@ public class PlaylistApp {
         }
     }
 
-    // Adds songs to the playlist
     private void addSongToPlaylist() {
         System.out.print("Enter playlist name: ");
         String playlistName = scanner.nextLine();
@@ -129,13 +125,14 @@ public class PlaylistApp {
             String category = scanner.nextLine();
             Song song = new Song(title, artist, category);
             playlist.addSong(song);
+            EventLog.getInstance().logEvent(new Event("Added song: "
+                    + title + " to playlist: " + playlistName));
             System.out.println("Song added to playlist.");
         } else {
             System.out.println("Playlist not found.");
         }
     }
 
-    // Removes songs from the playlist
     private void removeSongFromPlaylist() {
         System.out.print("Enter playlist name: ");
         String playlistName = scanner.nextLine();
@@ -147,6 +144,8 @@ public class PlaylistApp {
             for (Song song : playlist.viewSongs()) {
                 if (song.getName().equals(title)) {
                     playlist.removeSong(song);
+                    EventLog.getInstance().logEvent(new Event("Removed song: "
+                            + title + " from playlist: " + playlistName));
                     removed = true;
                     System.out.println("Song removed from playlist.");
                     break;
@@ -160,7 +159,6 @@ public class PlaylistApp {
         }
     }
 
-    // Allows the user to rename the playlist
     private void renamePlaylist() {
         System.out.print("Enter current playlist name: ");
         String currentName = scanner.nextLine();
@@ -171,21 +169,22 @@ public class PlaylistApp {
             playlist.renamePlaylist(newName);
             playlists.put(newName, playlist);
             playlists.remove(currentName);
+            EventLog.getInstance().logEvent(new Event("Renamed playlist from: "
+                    + currentName + " to: " + newName));
             System.out.println("Playlist renamed.");
         } else {
             System.out.println("Playlist not found.");
         }
     }
 
-    // Allows the user to create categories for music
     private void createCategory() {
         System.out.print("Enter category name: ");
         String name = scanner.nextLine();
         categories.put(name, new Category(name));
+        EventLog.getInstance().logEvent(new Event("Created category: " + name));
         System.out.println("Category created.");
     }
 
-    // Allows user to input a song to a specific category
     private void addSongToCategory() {
         System.out.print("Enter category name: ");
         String categoryName = scanner.nextLine();
@@ -199,13 +198,14 @@ public class PlaylistApp {
             String songCategory = scanner.nextLine();
             Song song = new Song(title, artist, songCategory);
             category.addSong(song);
+            EventLog.getInstance().logEvent(new Event("Added song: " + title
+                    + " to category: " + categoryName));
             System.out.println("Song added to category.");
         } else {
             System.out.println("Category not found.");
         }
     }
 
-    // Allows the user to view a certain category
     private void viewCategory() {
         System.out.print("Enter category name: ");
         String name = scanner.nextLine();
@@ -219,22 +219,19 @@ public class PlaylistApp {
         }
     }
 
-    // EFFECTS: Allows the user to shuffle the playlist
-    // REQUIRES: The playlist to not be null
     private void shufflePlaylist() {
         System.out.print("Enter playlist name to shuffle: ");
         String name = scanner.nextLine();
         Playlist playlist = playlists.get(name);
         if (playlist != null) {
             playlist.shuffleSongs();
+            EventLog.getInstance().logEvent(new Event("Shuffled playlist: " + name));
             System.out.println("Playlist shuffled.");
         } else {
             System.out.println("Playlist not found.");
         }
     }
 
-    // REQUIRES: Playlist to not be null
-    // EFFECTS: Searches for songs in the playlist by their name or their artist
     private void searchSongInPlaylist() {
         System.out.print("Enter playlist name to search in: ");
         String playlistName = scanner.nextLine();
@@ -244,10 +241,8 @@ public class PlaylistApp {
             String query = scanner.nextLine();
             boolean found = false;
             for (Song song : playlist.viewSongs()) {
-                if (song.getName().equalsIgnoreCase(query)
-                        || song.getArtist().equalsIgnoreCase(query)) {
-                    System.out.println("Found: " + song.getName()
-                            + " by " + song.getArtist());
+                if (song.getName().equalsIgnoreCase(query) || song.getArtist().equalsIgnoreCase(query)) {
+                    System.out.println("Found: " + song.getName() + " by " + song.getArtist());
                     found = true;
                 }
             }
@@ -259,37 +254,41 @@ public class PlaylistApp {
         }
     }
 
-    // Saves playlists to a JSON file
     private void savePlaylists() {
         try {
             jsonWriter.open();
             jsonWriter.write(playlists);
             jsonWriter.close();
+            EventLog.getInstance().logEvent(new Event("Saved playlists to " + JSON_STORE));
             System.out.println("Playlists saved to " + JSON_STORE);
         } catch (FileNotFoundException e) {
             System.out.println("Unable to save playlists to " + JSON_STORE);
         }
     }
 
-    // Loads playlists from a JSON file
     private void loadPlaylists() {
         try {
             Map<String, Playlist> loadedPlaylists = jsonReader.read();
             System.out.println("Playlists loaded from " + JSON_STORE);
             System.out.println("Loaded playlists:");
-            for (Map.Entry<String, Playlist> entry
-                    : loadedPlaylists.entrySet()) {
+            for (Map.Entry<String, Playlist> entry : loadedPlaylists.entrySet()) {
                 System.out.println("Playlist: " + entry.getKey());
                 Playlist playlist = entry.getValue();
                 for (Song song : playlist.viewSongs()) {
-                    System.out.println("\t" + song.getName() + " by "
-                            + song.getArtist() + " ("
-                            + song.getCategory() + ")");
+                    System.out.println("\t" + song.getName() + " by " + song.getArtist()
+                            + " (" + song.getCategory() + ")");
                 }
             }
             playlists.putAll(loadedPlaylists);
+            EventLog.getInstance().logEvent(new Event("Loaded playlists from " + JSON_STORE));
         } catch (IOException e) {
             System.out.println("Unable to read from file: " + JSON_STORE);
+        }
+    }
+
+    private void printEventLog() {
+        for (Event event : EventLog.getInstance()) {
+            System.out.println(event.getDate() + " - " + event.getDescription());
         }
     }
 
